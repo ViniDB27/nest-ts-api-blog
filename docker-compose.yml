@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: database
+    image: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_USER: docker
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: docker
+      MYSQL_DATABASE: blog

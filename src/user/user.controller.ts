@@ -10,6 +10,7 @@ import {
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
+import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int-pipe.pipe'
 
 @Controller('user')
 export class UserController {
@@ -26,8 +27,8 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id)
+  findOne(@Param('id', CustomParseIntPipe) id: number) {
+    return this.userService.findOne(id)
   }
 
   @Patch(':id')

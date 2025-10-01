@@ -19,7 +19,7 @@ Content-Type: application/json
 ###
 # @name readOneUser
 
-GET {{baseUrl}}/user/123
+GET {{baseUrl}}/user/123a
 Content-Type: application/json
 
 {
