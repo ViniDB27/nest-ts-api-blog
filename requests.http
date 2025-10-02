@@ -1,0 +1,70 @@
+@baseUrl = http://localhost:3000
+@jwtToken = {{authLogin.response.body.accessToken}}
+
+###
+# @name healthRouter
+
+GET {{baseUrl}}/
+
+###
+# @name authLogin
+
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "johndoe@example.com",
+  "password": "123456"
+}
+
+###
+# @name createUser
+
+POST {{baseUrl}}/user
+Content-Type: application/json
+
+{
+  "name": "john doe",
+  "email": "johndoe@example.com",
+  "password": "123456"
+}
+
+###
+# @name readObeUser
+
+GET {{baseUrl}}/user/123
+Authorization: Bearer {{jwtToken}}
+
+###
+# @name updateUser
+
+PATCH {{baseUrl}}/user/me
+Content-Type: application/json
+Authorization: Bearer {{jwtToken}}
+
+{
+  "name": "john doe",
+  "email": "johndoe2@example.com"
+}
+
+###
+# @name updateUser
+
+PATCH {{baseUrl}}/user/me/password
+Content-Type: application/json
+Authorization: Bearer {{jwtToken}}
+
+{
+  "currentPassword": "123456",
+  "newPassword": "123456"
+}
+
+### Read one user
+# @name readOneUser
+GET {{baseUrl}}/user/me
+Authorization: Bearer {{jwtToken}}
+
+### Delete one user
+# @name deleteOneUser
+DELETE {{baseUrl}}/user/me
+Authorization: Bearer {{jwtToken}}

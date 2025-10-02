@@ -3,41 +3,63 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int-pipe.pipe'
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
+import type { AuthenticatedRequest } from 'src/auth/types/authenticated-request'
+import { UserResponseDto } from './dto/user-response.dto'
+import { UpdatePasswordDto } from './dto/update-password.dto'
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto)
+  async create(@Body() createUserDto: CreateUserDto) {
+    const user = await this.userService.create(createUserDto)
+    return new UserResponseDto(user)
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll()
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async findOne(@Req() req: AuthenticatedRequest) {
+    const user = await this.userService.findOneByOrFail({ id: req.user.id })
+    return new UserResponseDto(user)
   }
 
-  @Get(':id')
-  findOne(@Param('id', CustomParseIntPipe) id: number) {
-    return this.userService.findOne(id)
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  async update(
+    @Req() req: AuthenticatedRequest,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const user = await this.userService.update(req.user.id, updateUserDto)
+    return new UserResponseDto(user)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto)
+  @UseGuards(JwtAuthGuard)
+  @Patch('me/password')
+  async updatePassword(
+    @Req() req: AuthenticatedRequest,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    const user = await this.userService.updatePassword(
+      req.user.id,
+      updatePasswordDto,
+    )
+    return new UserResponseDto(user)
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id)
+  @UseGuards(JwtAuthGuard)
+  @Delete('me')
+  async remove(@Req() req: AuthenticatedRequest) {
+    const user = await this.userService.remove(req.user.id)
+    return new UserResponseDto(user)
   }
 }
